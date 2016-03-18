@@ -17,17 +17,17 @@ import android.widget.Scroller;
  */
 public class ScrollViewGroup extends ViewGroup {
 
-    private static final String TAG="ScrollViewGroup";
+    private static final String TAG = "ScrollViewGroup";
 
     private int screenWidthPixes, screenHeightPixes;
     private int lastX, lastY, lastInterceptX, lastInterceptY;
-    private int itemWidht, itemHeith;
+    private int itemWidht, itemHeigth;
     private int mChildCount;
     private int padding = 0;
     private int mScrollDuration = 500;
 
     private Scroller mScroller;
-    private VelocityTracker mVelocityTracker ;
+    private VelocityTracker mVelocityTracker;
 
     public ScrollViewGroup(Context context) {
         super(context);
@@ -51,9 +51,9 @@ public class ScrollViewGroup extends ViewGroup {
         screenHeightPixes = metrics.heightPixels;
         screenWidthPixes = metrics.widthPixels;
         mScroller = new Scroller(getContext());
-        mVelocityTracker = VelocityTracker.obtain() ;
+        mVelocityTracker = VelocityTracker.obtain();
         setBackgroundColor(Color.BLACK);
-        setPadding(0,0,0,0);
+        setPadding(0, 0, 0, 0);
     }
 
 
@@ -80,7 +80,7 @@ public class ScrollViewGroup extends ViewGroup {
         }
         setMeasuredDimension(width * mChildCount + padding * (mChildCount > 1 ? mChildCount - 1 : 0), height);
 
-        Log.d(TAG,"itemWidth="+itemWidht+" itemHeight="+itemHeith);
+        Log.d(TAG, "itemWidth=" + itemWidht + " itemHeight=" + itemHeigth);
         //measure child
         for (int i = 0; i < mChildCount; i++) {
             View child = getChildAt(i);
@@ -88,7 +88,7 @@ public class ScrollViewGroup extends ViewGroup {
                     MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST));
         }
 
-        itemHeith = height;
+        itemHeigth = height;
         itemWidht = width;
     }
 
@@ -98,27 +98,28 @@ public class ScrollViewGroup extends ViewGroup {
         for (int i = 0; i < mChildCount; i++) {
             View child = getChildAt(i);
             child.layout(left, t, left + itemWidht, b);
-            Log.d(TAG,"layout left= "+left);
-            left += (itemWidht+padding);
+            Log.d(TAG, "layout left= " + left);
+            left += (itemWidht + padding);
         }
     }
 
+
     @Override
-    public boolean onInterceptHoverEvent(MotionEvent event) {
+    public boolean onInterceptTouchEvent(MotionEvent event) {
         boolean intercept = false;
         int x = (int) event.getX();
         int y = (int) event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 intercept = false;
-                if (mScroller != null) {
+                if (!mScroller.isFinished()) {
                     mScroller.abortAnimation();
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
                 final int deltaX = x - lastInterceptX;
                 final int deltaY = y - lastInterceptY;
-                if (Math.abs(deltaX) < Math.abs(deltaY)) {
+                if (Math.abs(deltaX) > Math.abs(deltaY)) {
                     intercept = true;
                 } else {
                     intercept = false;
@@ -139,47 +140,57 @@ public class ScrollViewGroup extends ViewGroup {
         int x = (int) event.getX();
         int y = (int) event.getY();
         int currentScrollX = getScrollX();
-
+        mVelocityTracker.addMovement(event);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (mScroller != null) {
+                if (!mScroller.isFinished()) {
                     mScroller.abortAnimation();
                 }
+                lastX = x ;
+                lastY = y ;
                 break;
             case MotionEvent.ACTION_MOVE:
                 final int deltaX = x - lastX;
-                int boundary = 100 ;//允超出的边界
-                boolean canScroll =false ;
-                if(currentScrollX > -boundary && currentScrollX < ((mChildCount-1)*(itemWidht+padding)+boundary)) {
-                    canScroll = true ;
-                }
-                if(canScroll){
+                int boundary = 100;//允超出的边界
+                if (currentScrollX > -boundary && currentScrollX < ((mChildCount - 1) * (itemWidht + padding) + boundary)) {
                     scrollBy(-deltaX, 0);
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                int curPosition = currentScrollX / (itemWidht + padding);
-                int curOffsetX = currentScrollX - (curPosition * itemWidht) - (curPosition * padding);
-                if (Math.abs(curOffsetX) > itemWidht / 3 && curOffsetX>0) {
-                    curPosition++;
-                } else if(Math.abs(curOffsetX)>itemWidht/3 && curOffsetX<0){
-                    curPosition--;
+                mVelocityTracker.computeCurrentVelocity(1000, 8000);
+                final float xVelocity = mVelocityTracker.getXVelocity();
+                Log.d(TAG, "xVelocity: " + xVelocity);
+                if (xVelocity > 50) {
+                    //TODO fling
                 }
-                int  dstScollX  =Math.max(0,Math.min(mChildCount-1,curPosition))*(itemWidht+padding) ;
+
+
+                int curPosition = currentScrollX / (itemWidht + padding);
+                int curOffsetX = currentScrollX - (curPosition * (itemWidht+padding));
+                Log.i(TAG, "offset " + curOffsetX);
+                if (curOffsetX > itemWidht / 2) {
+                    curPosition++;
+                }
+
+                Log.d(TAG,"currentScrollX:"+currentScrollX);
+                Log.d(TAG,"currentOffsetX:"+curOffsetX);
+                Log.d(TAG,"currentPosition:"+curPosition);
+                int dstScollX = Math.max(0, Math.min(mChildCount - 1, curPosition)) * (itemWidht + padding);
                 smoothScrollTo(dstScollX, 0);
                 break;
         }
         lastX = x;
         lastY = y;
-        return true;
+        return false;
     }
 
-    protected  void smoothScrollTo(int x, int y){
-        int startX = getScrollX() ;
+
+    protected void smoothScrollTo(int x, int y) {
+        int startX = getScrollX();
         int startY = getScrollY();
-        int dx = x-startX ;
-        int dy = y-startY ;
-        mScroller.startScroll(startX,startY,dx,dy,mScrollDuration);
+        int dx = x - startX;
+        int dy = y - startY;
+        mScroller.startScroll(startX, startY, dx, dy, mScrollDuration);
         postInvalidate();
     }
 
@@ -198,6 +209,11 @@ public class ScrollViewGroup extends ViewGroup {
             scrollTo(currentX, currentY);
             postInvalidate();
         }
+    }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mVelocityTracker.recycle();
     }
 }

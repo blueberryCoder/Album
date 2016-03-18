@@ -1,13 +1,11 @@
 package com.bluberry.album.view;
 
-import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -62,7 +60,7 @@ public class AlbumActivity extends BaseMvpActivity<IAlbumView,AlbumPresentor<IAl
 
                 ScrollViewGroup scrollViewGroup = new ScrollViewGroup(AlbumActivity.this);
                 for(int i=0;i<mAdapter.getSelectedIamges().size();i++){
-                    ImageView imageView = new ImageView(AlbumActivity.this);
+                    ImageView imageView = new StretchImageView(AlbumActivity.this);
                     imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT));
                     Glide.with(AlbumActivity.this).load(mAdapter.getSelectedIamges().get(i).path).into(imageView);
