@@ -67,6 +67,7 @@ public class AlbumPresentor<T> extends BaseMvpPresentor<T>{
         }
         @Override
         public void handleMessage(Message msg) {
+            if(viewHolder==null) return  ;
             switch (msg.what){
                 case SHOW_IMAGES_CODE:
                     viewHolder.showImages();

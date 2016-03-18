@@ -16,7 +16,7 @@ import java.util.List;
 public class AlbumModleImpl implements IAlbumModle {
 
     /**
-     * 获取相册中左右图片的信息
+     * 获取相册中图片的信息
      * @param resolver
      * @return
      */
