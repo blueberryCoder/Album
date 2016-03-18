@@ -37,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:background="@drawable/btn_bg_shape"
+            android:layout_margin="5dp"
             android:text="预览"
             />
 

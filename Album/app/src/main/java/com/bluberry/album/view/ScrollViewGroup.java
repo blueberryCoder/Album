@@ -116,9 +116,9 @@ public class ScrollViewGroup extends ViewGroup {
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                final int delatX = x - lastInterceptX;
-                final int dealtY = y - lastInterceptY;
-                if (Math.abs(delatX) < Math.abs(dealtY)) {
+                final int deltaX = x - lastInterceptX;
+                final int deltaY = y - lastInterceptY;
+                if (Math.abs(deltaX) < Math.abs(deltaY)) {
                     intercept = true;
                 } else {
                     intercept = false;
@@ -147,25 +147,25 @@ public class ScrollViewGroup extends ViewGroup {
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                final int delatX = x - lastX;
-                scrollBy(-delatX, 0);
+                final int deltaX = x - lastX;
+                int boundary = 100 ;//允超出的边界
+                boolean canScroll =false ;
+                if(currentScrollX > -boundary && currentScrollX < ((mChildCount-1)*(itemWidht+padding)+boundary)) {
+                    canScroll = true ;
+                }
+                if(canScroll){
+                    scrollBy(-deltaX, 0);
+                }
                 break;
             case MotionEvent.ACTION_UP:
-                //获得当前的 item 位置
-                Log.d(TAG,"当前srcollX:"+currentScrollX);
                 int curPosition = currentScrollX / (itemWidht + padding);
-                Log.d(TAG,"currentPosition:"+curPosition);
-                // 当前的偏移
                 int curOffsetX = currentScrollX - (curPosition * itemWidht) - (curPosition * padding);
-                Log.d(TAG,"current offset :"+curOffsetX);
                 if (Math.abs(curOffsetX) > itemWidht / 3 && curOffsetX>0) {
                     curPosition++;
                 } else if(Math.abs(curOffsetX)>itemWidht/3 && curOffsetX<0){
                     curPosition--;
                 }
-                Log.d(TAG,"current position: "+curPosition);
-                Log.d(TAG, "srcoll to X: " + curPosition * (itemWidht + padding));
-                 int  dstScollX  =Math.max(0,Math.min(mChildCount-1,curPosition))*(itemWidht+padding) ;
+                int  dstScollX  =Math.max(0,Math.min(mChildCount-1,curPosition))*(itemWidht+padding) ;
                 smoothScrollTo(dstScollX, 0);
                 break;
         }
