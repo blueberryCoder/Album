@@ -27,17 +27,11 @@ public class StretchImageView extends ImageView {
     private int mode;
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-
-        return super.dispatchTouchEvent(event);
-    }
-
-    @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 mode = 1;
-//                return true ;
+                return true ;
 //                break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 mode += 1;

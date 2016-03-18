@@ -26,6 +26,8 @@ public class ScrollViewGroup extends ViewGroup {
     private int padding = 0;
     private int mScrollDuration = 500;
 
+    private boolean firstMove = false ;
+
     private Scroller mScroller;
     private VelocityTracker mVelocityTracker;
 
@@ -107,13 +109,14 @@ public class ScrollViewGroup extends ViewGroup {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         boolean intercept = false;
-        int x = (int) event.getX();
-        int y = (int) event.getY();
+        final int x = (int) event.getX();
+        final int y = (int) event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 intercept = false;
                 if (!mScroller.isFinished()) {
                     mScroller.abortAnimation();
+                    intercept = true;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -134,24 +137,29 @@ public class ScrollViewGroup extends ViewGroup {
         return intercept;
     }
 
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int x = (int) event.getX();
-        int y = (int) event.getY();
-        int currentScrollX = getScrollX();
+        final int x = (int) event.getX();
+        final int y = (int) event.getY();
+        final int currentScrollX = getScrollX();
         mVelocityTracker.addMovement(event);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                // 如果子View 消费了DOWN时间，将不会走这条分支，所以 lastX,lastY的赋值，移动至第一次MOVE时
                 if (!mScroller.isFinished()) {
                     mScroller.abortAnimation();
                 }
-                lastX = x ;
-                lastY = y ;
+                lastX = x;
+                lastY = y;
                 break;
             case MotionEvent.ACTION_MOVE:
+                if(!firstMove){
+                    firstMove = true ;
+                    lastX = x ;
+                    lastY = y ;
+                }
                 final int deltaX = x - lastX;
-                int boundary = 100;//允超出的边界
+                final int boundary = 100;//允超出的边界
                 if (currentScrollX > -boundary && currentScrollX < ((mChildCount - 1) * (itemWidht + padding) + boundary)) {
                     scrollBy(-deltaX, 0);
                 }
@@ -164,24 +172,20 @@ public class ScrollViewGroup extends ViewGroup {
                     //TODO fling
                 }
 
-
                 int curPosition = currentScrollX / (itemWidht + padding);
-                int curOffsetX = currentScrollX - (curPosition * (itemWidht+padding));
+                final int curOffsetX = currentScrollX - (curPosition * (itemWidht + padding));
                 Log.i(TAG, "offset " + curOffsetX);
                 if (curOffsetX > itemWidht / 2) {
                     curPosition++;
                 }
-
-                Log.d(TAG,"currentScrollX:"+currentScrollX);
-                Log.d(TAG,"currentOffsetX:"+curOffsetX);
-                Log.d(TAG,"currentPosition:"+curPosition);
-                int dstScollX = Math.max(0, Math.min(mChildCount - 1, curPosition)) * (itemWidht + padding);
+                firstMove = false ;
+                final int dstScollX = Math.max(0, Math.min(mChildCount - 1, curPosition)) * (itemWidht + padding);
                 smoothScrollTo(dstScollX, 0);
                 break;
         }
         lastX = x;
         lastY = y;
-        return false;
+        return true;
     }
 
 
