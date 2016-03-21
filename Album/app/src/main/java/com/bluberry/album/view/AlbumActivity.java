@@ -22,6 +22,9 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher;
+
 
 /**
  * 主页面
@@ -37,6 +40,8 @@ public class AlbumActivity extends BaseMvpActivity<IAlbumView,AlbumPresentor<IAl
     private Button btnSelected;
     private Button btnPreview;
     private PopupWindow mPopWindow;
+
+    private PhotoViewAttacher mAttacher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +64,17 @@ public class AlbumActivity extends BaseMvpActivity<IAlbumView,AlbumPresentor<IAl
                 }
 
                 ScrollViewGroup scrollViewGroup = new ScrollViewGroup(AlbumActivity.this);
+
                 for(int i=0;i<mAdapter.getSelectedIamges().size();i++){
-                    ImageView imageView = new StretchImageView(AlbumActivity.this);
-                    imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT));
+                    ImageView imageView = new ImageView(AlbumActivity.this);
+
+                    imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                   mAttacher = new PhotoViewAttacher(imageView);
+
+
+
                     Glide.with(AlbumActivity.this).load(mAdapter.getSelectedIamges().get(i).path).into(imageView);
                     scrollViewGroup.addView(imageView);
                 }
