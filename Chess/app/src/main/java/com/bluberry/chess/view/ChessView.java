@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -130,7 +129,7 @@ public class ChessView extends View {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             int x = (int) event.getX();
             int y = (int) event.getY();
-            getChessPiecesWithPoint(x, y);
+            addChessPieces(x, y);
             //判断是否有五子相连
             checkGobang();
             invalidate();
@@ -149,7 +148,13 @@ public class ChessView extends View {
             }
     }
 
-    private ChessPieces getChessPiecesWithPoint(int x, int y) {
+    /**
+     * 添加棋子
+     * @param x
+     * @param y
+     * @return
+     */
+    private ChessPieces addChessPieces(int x, int y) {
         ChessPieces chessPieces = null;
         if (ChessPieces.isWhiteAble) {
             chessPieces = new WhiteChessPieces((int) ((y - 2 / spaceSize) / spaceSize)

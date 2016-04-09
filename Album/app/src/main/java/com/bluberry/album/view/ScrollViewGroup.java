@@ -181,6 +181,7 @@ public class ScrollViewGroup extends ViewGroup {
                 firstMove = false ;
                 final int dstScollX = Math.max(0, Math.min(mChildCount - 1, curPosition)) * (itemWidht + padding);
                 smoothScrollTo(dstScollX, 0);
+                mVelocityTracker.clear();
                 break;
         }
         lastX = x;

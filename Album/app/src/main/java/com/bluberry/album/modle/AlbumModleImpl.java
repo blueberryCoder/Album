@@ -35,7 +35,10 @@ public class AlbumModleImpl implements IAlbumModle {
             }
             return images;
         } finally {
-            IOUtils.closeSafety(query);
+            if(null!=query){
+                query.close();
+            }
+//            IOUtils.closeSafety(query);
         }
     }
 }
