@@ -167,17 +167,20 @@ public class ChessView extends View {
      */
     private static abstract class ChessPieces {
         public static boolean isWhiteAble = false;
+        public static int MAX = 8;
+        public static int MIN=5;
         public static ChessPieces[][] positions = new ChessPieces[chessLine + 1][chessLine + 1];
         protected int row, col;//位置
         protected boolean white;//是否为白棋
 
-        public ChessPieces(int row, int col) {
+        public ChessPieces(int row, int col ,boolean white) {
             this.row = row;
             this.col = col;
             if (positions[row][col] == null) {
                 positions[row][col] = this;
                 isWhiteAble = !isWhiteAble;
             }
+            this.white = white;
         }
 
         public void check() {
@@ -187,17 +190,82 @@ public class ChessView extends View {
             checkObliqueDown();
         }
 
-        //右
-        abstract void checkRight();
+        void checkRight() {
+            int count = 0;
+            for (int i = 0; i < MAX; i++) {
+                if(col+i >chessLine)break ;
+                if (positions[row][col + i] != null && positions[row][col + i].white == white) {
+                    count++;
+                }else{
+                    break ;
+                }
+            }
+            if (count >= MIN) {
+                for (int i = 0; i < count; i++) {
+                    if (positions[row][col + i] != null && positions[row][col + i].white == white) {
+                        positions[row][col + i] = null;
+                    }
+                }
+            }
+        }
 
-        //下
-        abstract void checkDown();
+        void checkDown() {
+            int count = 0;
+            for (int i = 0; i < MAX; i++) {
+                if(row+i>chessLine) break;
+                if (positions[row + i][col] != null && positions[row + i][col].white == white) {
+                    count++;
+                }else{
+                    break ;
+                }
+            }
+            if (count >= MIN) {
+                for (int i = 0; i < count; i++) {
+                    if (positions[row + i][col] != null && positions[row + i][col].white == white) {
+                        positions[row + i][col] = null;
+                    }
+                }
+            }
+        }
 
-        //右上
-        abstract void checkObliqueUp();
+        void checkObliqueUp() {
+            int count = 0;
+            for (int i = 0; i < MAX; i++) {
+                if(row-i<0||col+i>chessLine)break;
+                if (positions[row - i][col + i] != null && positions[row - i][col + i].white == white) {
+                    count++;
+                }else{
+                    break;
+                }
+            }
+            if (count >= MIN) {
+                for (int i = 0; i < count; i++) {
+                    if (positions[row - i][col + i] != null && positions[row - i][col + i].white == white) {
+                        positions[row - i][col + i] = null;
+                    }
+                }
+            }
 
-        //右下
-        abstract void checkObliqueDown();
+        }
+
+        void checkObliqueDown() {
+            int count = 0;
+            for (int i = 0; i < MAX; i++) {
+                if(row+i>chessLine||col+i>chessLine)break;
+                if (positions[row + i][col + i] != null && positions[row + i][col + i].white == white) {
+                    count++;
+                }else{
+                    break;
+                }
+            }
+            if (count >= MIN) {
+                for (int i = 0; i < count; i++) {
+                    if (positions[row + i][col + i] != null && positions[row + i][col + i].white == white) {
+                        positions[row + i][col + i] = null;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -206,87 +274,8 @@ public class ChessView extends View {
     private static class WhiteChessPieces extends ChessPieces {
 
         public WhiteChessPieces(int row, int col) {
-            super(row, col);
-            white = true;
+            super(row, col,true);
         }
-
-        /**
-         * 检查右
-         */
-        @Override
-        void checkRight() {
-            int count = 0;
-            if (col > chessLine - 5) return;
-            for (int i = 0; i < 6; i++) {
-                if (positions[row][col + i] != null && positions[row][col + i].white == true) {
-                    count++;
-                }
-            }
-            if (count >= 5) {
-                for (int i = 0; i < 6; i++) {
-                    if (positions[row][col + i] != null && positions[row][col + i].white == true) {
-                        positions[row][col + i] = null;
-                    }
-                }
-            }
-        }
-
-        @Override
-        void checkDown() {
-            if (row > chessLine - 5) return;
-            int count = 0;
-            for (int i = 0; i < 6; i++) {
-                if (positions[row + i][col] != null && positions[row + i][col].white == true) {
-                    count++;
-                    Log.i("TAG", "count: " + count);
-                }
-            }
-            if (count >= 5) {
-                for (int i = 0; i < 6; i++) {
-                    if (positions[row + i][col] != null && positions[row + i][col].white == true) {
-                        positions[row + i][col] = null;
-                    }
-                }
-            }
-        }
-
-        @Override
-        void checkObliqueUp() {
-            if (col > chessLine - 5 || row < 5) return;
-            int count = 0;
-            for (int i = 0; i < 6; i++) {
-                if (positions[row - i][col + i] != null && positions[row - i][col + i].white == true) {
-                    count++;
-                }
-            }
-            if (count >= 5) {
-                for (int i = 0; i < 6; i++) {
-                    if (positions[row - i][col + i] != null && positions[row - i][col + i].white == true) {
-                        positions[row - i][col + i] = null;
-                    }
-                }
-            }
-
-        }
-
-        @Override
-        void checkObliqueDown() {
-            if (col > chessLine - 5 || row > chessLine - 5) return;
-            int count = 0;
-            for (int i = 0; i < 6; i++) {
-                if (positions[row + i][col + i] != null && positions[row + i][col + i].white == true) {
-                    count++;
-                }
-            }
-            if (count >= 5) {
-                for (int i = 0; i < 6; i++) {
-                    if (positions[row + i][col + i] != null && positions[row + i][col + i].white == true) {
-                        positions[row + i][col + i] = null;
-                    }
-                }
-            }
-        }
-
     }
 
     /**
@@ -295,81 +284,8 @@ public class ChessView extends View {
     private static class BlackChessPieces extends ChessPieces {
 
         public BlackChessPieces(int row, int col) {
-            super(row, col);
-            white = false;
-        }
-
-        @Override
-        void checkRight() {
-            if (col > chessLine - 5) return;
-            int count = 0;
-            for (int i = 0; i < 6; i++) {
-                if (positions[row][col + i] != null && positions[row][col + i].white == false) {
-                    count++;
-                }
-            }
-            if (count >= 5) {
-                for (int i = 0; i < 6; i++) {
-                    if (positions[row][col + i] != null && positions[row][col + i].white == false) {
-                        positions[row][col + i] = null;
-                    }
-                }
-            }
-        }
-
-        @Override
-        void checkDown() {
-            if (row > chessLine - 5) return;
-            int count = 0;
-            for (int i = 0; i < 6; i++) {
-                if (positions[row + i][col] != null && positions[row + i][col].white == false) {
-                    count++;
-                }
-            }
-            if (count >= 5) {
-                for (int i = 0; i < 6; i++) {
-                    if (positions[row + i][col] != null && positions[row + i][col].white == false) {
-                        positions[row + i][col] = null;
-                    }
-                }
-            }
-
-        }
-
-        @Override
-        void checkObliqueUp() {
-            if (col > chessLine - 5 || row < 5) return;
-            int count = 0;
-            for (int i = 0; i < 6; i++) {
-                if (positions[row - i][col + i] != null && positions[row - i][col + i].white == false) {
-                    count++;
-                }
-            }
-            if (count >= 5) {
-                for (int i = 0; i < 6; i++) {
-                    if (positions[row - i][col + i] != null && positions[row - i][col + i].white == false) {
-                        positions[row - i][col + i] = null;
-                    }
-                }
-            }
-        }
-
-        @Override
-        void checkObliqueDown() {
-            if (col > chessLine - 5 || row > chessLine - 5) return;
-            int count = 0;
-            for (int i = 0; i < 6; i++) {
-                if (positions[row + i][col + i] != null && positions[row + i][col + i].white == false) {
-                    count++;
-                }
-            }
-            if (count >= 5) {
-                for (int i = 0; i < 6; i++) {
-                    if (positions[row + i][col + i] != null && positions[row + i][col + i].white == false) {
-                        positions[row + i][col + i] = null;
-                    }
-                }
-            }
+            super(row, col,false);
         }
     }
+
 }
