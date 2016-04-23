@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context="com.blueberry.indicator.MainActivity">
+
+    <com.blueberry.indicator.view.ViewIndicator
+        android:layout_width="match_parent"
+        android:layout_height="?android:actionBarSize"
+        android:id="@+id/view_indicator"
+        android:layout_alignParentTop="true"
+        app:iconColor="@color/colorAccent"
+        app:numofvisiable="3"
+        app:textSize="14sp"
+        app:textColor="@color/colorAccent"
+        android:background="@color/colorPrimaryDark"
+        ></com.blueberry.indicator.view.ViewIndicator>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/view_indicator"
+        ></android.support.v4.view.ViewPager>
+</RelativeLayout>
